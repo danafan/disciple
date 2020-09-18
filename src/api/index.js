@@ -2,7 +2,7 @@ import axios from 'axios'
 import router from '../router/index.js'
 import { Indicator } from 'mint-ui';
 
-const baseURL = `${location.origin}/mobile/`;
+const baseURL = `${location.origin}/api/`;
 // 创建axios实例，可以自定义配置
 const instance = axios.create({
   baseURL,
@@ -21,7 +21,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(response => {
   Indicator.close();
   switch (response.data.code) {
-    case 104:
+    case 103:
     sessionStorage.clear();
     router.replace("/login");
   }

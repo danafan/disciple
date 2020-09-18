@@ -7,8 +7,6 @@ const index = resolve=>System.import('@/pages/index')
 const mine = resolve=>System.import('@/pages/mine')
 const money_record = resolve=>System.import('@/pages/money_record')
 const cash = resolve=>System.import('@/pages/cash')
-// const disciple = resolve=>System.import('@/pages/disciple')
-// const disciple_order = resolve=>System.import('@/pages/disciple_order')
 
 
 Vue.use(Router);
@@ -38,27 +36,7 @@ const router = new Router({
 		path: '/cash',
 		name:"提现",
 		component: cash
-	},
-	// {
-	// 	path: '/create_problem',
-	// 	name:"新增问题",
-	// 	component: create_problem
-	// },
-	// {
-	// 	path: '/order_detail',
-	// 	name:"任务详情",
-	// 	component: order_detail
-	// },
-	// {
-	// 	path: '/disciple',
-	// 	name:"徒弟列表",
-	// 	component: disciple
-	// },
-	// {
-	// 	path: '/disciple_order',
-	// 	name:"徒弟订单",
-	// 	component: disciple_order
-	// },
+	}
 	]
 })
 const originalPush = Router.prototype.push

@@ -1,9 +1,9 @@
 <template>
 	<div class="container">
 		<div class="login_title">手机号登录</div>
-		<input class="input_element" type="text" placeholder="请输入手机号" v-model="phone">
+		<input class="input_element" type="number" placeholder="请输入手机号" v-model="phone">
 		<div class="code_box">
-			<input class="code" type="number" placeholder="短信验证码" v-model="code">
+			<input class="code" type="number" placeholder="短信验证码" v-model="sms_code">
 			<div class="but_text" :class="{'but_text_active':!notBut}" @click="getCode">{{but_text}}</div>
 		</div>
 		<div class="login_but" @click="login">登录</div>
@@ -84,12 +84,12 @@
 }
 </style>
 <script>
-	// import resource from '../api/resource.js'
+	import resource from '../api/resource.js'
 	export default{
 		data(){
 			return{
 				phone:"",
-				code:"",
+				sms_code:"",
 				but_text:"发送验证码",
 				notBut: true,                   	//默认获取验证码按钮可点击
       			time:60,                        	//默认倒数60秒
@@ -99,23 +99,21 @@
 			//获取验证码
       		getCode(){
       			if(!this.judgmentPhone.test(this.phone)){
-      				this.$toast("请输入正确的账号");
+      				this.$toast("请输入正确的手机号");
       			}else{
         			if(this.notBut == true){//如果按钮可以点击
         				let obj = {
         					phone: this.phone,
         				}
-        				this.$toast("发送成功...");
-        				this.timeDown();
-        				// resource.getCaptcha(obj).then(res => {
-            // 				if(res.data.code == 1){ //发送成功
-            // 					this.$message.success("发送成功...");
-            // 					this.time = res.data.data;
-            // 					this.timeDown();
-            // 				}else{
-            // 					this.$message.warning(res.data.msg);
-            // 				}
-            // 			});
+        				resource.getSmsCode(obj).then(res => {
+            				if(res.data.code == 1){ //发送成功
+            					this.$toast("发送成功...");
+            					this.time = res.data.data;
+            					this.timeDown();
+            				}else{
+            					this.$toast(res.data.msg);
+            				}
+            			});
         			}else{
         				this.$toast("操作频繁");
         			}
@@ -137,24 +135,24 @@
         	},
 			// 登录
 			login(){
-				// if(this.wangwang == ''){
-				// 	this.$toast("请输入旺旺号");
-				// }else if(this.password == ''){
-				// 	this.$toast("请输入密码");
-				// }else{
-				// 	let req = {
-				// 		ww:this.wangwang,
-				// 		pwd:this.password
-				// 	}
-				// 	resource.login(req).then(res => {
-				// 		if(res.data.code == 1){
-				// 			this.$toast(res.data.msg);
-				// 			this.$router.replace('/index');
-				// 		}else{
-				// 			this.$toast(res.data.msg);
-				// 		}
-				// 	})
-				// }
+				if(!this.judgmentPhone.test(this.phone)){
+      				this.$toast("请输入正确的手机号");
+      			}else if(this.sms_code == ''){
+					this.$toast("请输入验证码");
+				}else{
+					let req = {
+						phone:this.phone,
+						sms_code:this.sms_code
+					}
+					resource.login(req).then(res => {
+						if(res.data.code == 1){
+							this.$toast(res.data.msg);
+							this.$router.replace('/index');
+						}else{
+							this.$toast(res.data.msg);
+						}
+					})
+				}
 
 			}
 		}

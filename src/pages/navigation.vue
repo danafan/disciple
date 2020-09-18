@@ -28,6 +28,8 @@
 	flex-direction: column;
 	.tabContent{
 		flex:1;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 	}
 	.tab{
 		border-top:.04rem solid #E6E6E6; 

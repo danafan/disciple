@@ -4,20 +4,20 @@
 			<div class="phone">13067882143</div>
 			<div class="assets_box">
 				<div class="assets_item">
-					<div class="val">7000.00</div>
+					<div class="val">{{user_info.income_total}}</div>
 					<div class="label">总收益</div>
 				</div>
 				<div class="assets_item">
-					<div class="val">7000.00</div>
-					<div class="label">总收益</div>
+					<div class="val">{{user_info.wait_income}}</div>
+					<div class="label">待入账</div>
 				</div>
 				<div class="assets_item">
-					<div class="val">7000.00</div>
-					<div class="label">总收益</div>
+					<div class="val">{{user_info.income_total}}</div>
+					<div class="label">提现中</div>
 				</div>
 				<div class="assets_item">
-					<div class="val">7000.00</div>
-					<div class="label">总收益</div>
+					<div class="val">{{user_info.withdrawing}}</div>
+					<div class="label">可提现</div>
 				</div>
 			</div>
 			<div class="cash_but" @click="$router.push('/cash')">提现</div>
@@ -102,7 +102,36 @@
 }
 </style>
 <script>
+	import resource from '../api/resource.js'
 	export default{
-
+		data(){
+			return{
+				user_info:{}
+			}
+		},
+		created(){
+			//获取我的信息
+			this.getMyInfo();
+		},
+		methods:{
+			//获取我的信息
+			getMyInfo(){
+				resource.getMyInfo().then(res => {
+					if(res.data.code == 1){
+						this.user_info = res.data.data;
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			}
+		}
 	}
 </script>
+
+
+
+
+
+
+
+

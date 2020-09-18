@@ -4,29 +4,31 @@
 			<div class="title_text">徒弟列表</div>
 			<div class="route_title" @click="openAdd">添加徒弟</div>
 		</div>
-		<div class="disciple">
-			<div class="disciple_item">
-				<div class="disciple_info">
-					<div class="ww">徒弟旺旺号</div>
-					<div class="desc">完成任务数：0</div>
-					<div class="desc">累计带来佣金(元)：0.00</div>
-				</div>
-				<div class="status">待审核</div>
+		<div class="disciple" v-infinite-scroll="loadMore"
+		infinite-scroll-disabled="loading"
+		infinite-scroll-distance="10">
+		<div class="disciple_item" v-for="item in prentice_list">
+			<div class="disciple_info">
+				<div class="ww">{{item.ww}}</div>
+				<div class="desc">完成任务数：{{item.order_total}}</div>
+				<div class="desc">累计带来佣金(元)：{{item.award_total}}</div>
 			</div>
+			<div class="status">{{item.status_desc}}</div>
 		</div>
-		<div class="check_order" v-if="add_box">
-			<div class="order_content">
-				<div class="content_info">
-					<input class="input_box" type="text" placeholder="输入徒弟旺旺号" v-model="wang_code">
-				</div>
-				<div class="buts">
-					<div class="but" @click="noConfirmTask">取消</div>
-					<div class="line"></div>
-					<div class="but" @click="confirmTask">确认</div>
-				</div>
+	</div>
+	<div class="check_order" v-if="add_box">
+		<div class="order_content">
+			<div class="content_info">
+				<input class="input_box" type="text" placeholder="输入徒弟旺旺号" v-model="wang_code">
+			</div>
+			<div class="buts">
+				<div class="but" @click="noConfirmTask">取消</div>
+				<div class="line"></div>
+				<div class="but" @click="confirmTask">确认</div>
 			</div>
 		</div>
 	</div>
+</div>
 </template>
 <style lang="less" scoped>
 .index_container{
@@ -57,7 +59,10 @@
 	.disciple{
 		flex:1;
 		padding:.24rem;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 		.disciple_item{
+			margin-top: .1rem;
 			background: #fff;
 			padding-left: .3rem;
 			padding-right: .3rem;
@@ -156,14 +161,48 @@
 }
 </style>
 <script>
+	import resource from '../api/resource.js'
 	export default{
 		data(){
 			return{
-				add_box:true,		
+				add_box:false,		
 				wang_code:"",		//旺旺号
+				page:1,
+				pagesize:10,
+				loading:true,
+				prentice_list:[]
 			}
 		},
+		created(){
+			//获取徒弟列表
+			this.getPrenticeList();
+		},
 		methods:{
+			//上拉加载
+			loadMore(){
+				if(!this.loading){
+					this.page += 1;
+					//获取徒弟列表
+					this.getPrenticeList();
+				}
+			},
+			//获取徒弟列表
+			getPrenticeList(){
+				let req = {
+					page:this.page,
+					pagesize:this.pagesize
+				}
+				resource.getPrenticeList(req).then(res => {
+					if(res.data.code == 1){
+						let data = res.data.data;
+						this.loading = this.page === data.last_page?true:false;
+						let list = data.data;
+						this.prentice_list = this.prentice_list.concat(Array.from(list));
+					}else{
+						this.$toast(res.data.msg);
+					}
+				})
+			},
 			//点击添加徒弟
 			openAdd(){
 				this.wang_code = "";
@@ -179,20 +218,19 @@
 				if(this.wang_code == ""){
 					this.$toast("请输入徒弟旺旺号")
 				}else{
-					console.log(this.wang_code)
+					resource.addPrentice({ww:this.wang_code}).then(res => {
+						if(res.data.code == 1){
+							//获取徒弟列表
+							this.prentice_list = [];
+							this.page == 1;
+							this.getPrenticeList();
+							this.add_box = false;
+							this.$toast(res.data.msg);
+        				}else{
+        					this.$toast(res.data.msg);
+        				}
+        			})
 				}
-				// resource.confirmTask({ww:this.userInfo.ww}).then(res => {
-				// 	if(res.data.code == 1){
-				// 		clearInterval(this.setinterval);
-				// 		this.checkOrder = false;
-				// 		//获取用户信息
-				// 		this.getUserInfo();
-    //     				//获取用户任务
-    //     				this.getUserTask();
-    //     			}else{
-    //     				this.$toast(res.data.msg);
-    //     			}
-    //     		})
 			},
 		}
 	}

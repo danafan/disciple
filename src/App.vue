@@ -5,18 +5,10 @@
 </template>
 
 <script>
-  // import resource from './api/resource.js'
   export default {
     name: 'app',
     created(){
-      this.$router.push('/login')
-      // resource.getUserStatus().then(res => {
-      //   if(res.data.code == 1){
-      //     this.$router.push('/index')
-      //   }else{
-      //     this.$toast(res.data.msg);
-      //   }
-      // })
+      this.$router.push('/index')
     }
   }
 </script>
